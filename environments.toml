@@ -29,8 +29,16 @@ soroban_hello_world_contract = { client = true }
 [development.contracts.soroban_token_contract]
 client = true
 
-# Initialization steps for the contract, to be run after deployment (see note above).
-# Commands here will be appended to:
+# If your contract has a `__constructor`, specify your arguments to it here.
+# These are the same arguments you could pass after the `--` in a call to
+# `stellar contract deploy`
+# Only available in `development` and `test` environments
+constructor_args = """
+--symbol SCAST --decimal 7 --name "Scaffold Stellar Token" --admin me
+"""
+
+# Calls to the contract to make after it's deployed and initialized with
+# `constructor_args`. Commands here will be appended to:
 #
 #     stellar contract invoke \
 #         --id [this contract's id] \
@@ -45,8 +53,7 @@ client = true
 # `STELLAR_ACCOUNT=other-account`.
 #
 # Only supported in `development` and `test` environments.
-# init = """
-# initialize --symbol SCAST --decimal 7 --name "Scaffold Stellar Token" --admin me
+# after_deploy = """
 # mint --amount 2000000 --to me"
 # """
 
