@@ -26,7 +26,7 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-    - run: rustup target add wasm32-unknown-unknown
+    - run: rustup target add wasm32v1-none
     - uses: stellar/quickstart@main
       with:
         tag: testing
@@ -35,7 +35,7 @@ jobs:
       run: |
         if ! command -v stellar-scaffold &> /dev/null; then
           echo "stellar-scaffold not found, installing..."
-          cargo install --git https://github.com/ahalabs/scaffold-stellar --branch main stellar-scaffold-cli
+          cargo install --git https://github.com/ahalabs/scaffold-stellar --branch feat/constructor_args stellar-scaffold-cli
         else
           echo "stellar-scaffold already installed. Clear cache to force reinstall."
         fi

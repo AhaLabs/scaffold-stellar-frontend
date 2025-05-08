@@ -5,8 +5,8 @@ members = [
 ]
 
 [workspace.dependencies]
-loam-sdk = "0.6.16"
-loam-subcontract-core = "0.7.9"
+soroban-sdk = { version = "22.0.7" }
+soroban-token-sdk = { version = "22.0.1" }
 
 [profile.release]
 opt-level = "z"
