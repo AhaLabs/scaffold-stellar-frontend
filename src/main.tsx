@@ -9,9 +9,9 @@ import { NotificationProvider } from "./providers/NotificationProvider.tsx"
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <NotificationProvider>
-      <WalletProvider>
-        <App />
-      </WalletProvider>
+        <WalletProvider>
+          <App />
+        </WalletProvider>
     </NotificationProvider>
   </StrictMode>
 );

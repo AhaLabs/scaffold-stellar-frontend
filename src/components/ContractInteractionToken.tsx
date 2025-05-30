@@ -1,0 +1,83 @@
+import { useEffect, useState } from 'react'
+import * as Client from 'soroban_token_contract';
+import { useWallet } from '../hooks/useWallet';
+import { networkPassphrase, rpcUrl } from '../contracts/util';
+import { wallet } from "../util/wallet";
+import { ContractInteraction } from './ContractInteraction';
+
+export const ContractInteractionToken = () => {
+  const { address } = useWallet()
+  const [adminAccount, setAdminAccount] = useState("");
+  const [balance, setBalance] = useState<bigint>()
+  const [amountToMint, setAmountToMint] = useState("");
+
+  const inputLabel = !balance ? "Set an admin" : "How much tokens do you want to mint ?"
+  const titleLabel = !balance ? "Set an admin to use the contract !" : `Your balance is : ${balance}`
+
+  const contract = new Client.Client({
+    ...Client.networks.standalone,
+    rpcUrl: rpcUrl,
+    allowHttp : true,
+    publicKey: address
+  });
+
+  const callContractToken = async () => {
+    if (!balance) {
+      try {
+        const adminTx = await contract.set_admin({
+          new_admin: adminAccount,
+        })
+  
+        await adminTx.signAndSend({signTransaction: async (xdr: string) => {
+          return await wallet.signTransaction(xdr, {
+          address: address,
+          networkPassphrase: networkPassphrase
+        })}})
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+    else {
+      try {
+        if (address) {
+          const mintTx = await contract.mint({
+            to: address,
+            amount: BigInt(amountToMint)
+          })
+
+          await mintTx.signAndSend({signTransaction: async (xdr: string) => {
+            return await wallet.signTransaction(xdr, {
+            address: address,
+            networkPassphrase: networkPassphrase
+          })}}) 
+
+          const currBalance = await contract.balance({id: address})
+          setBalance(currBalance.result)
+        }
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+  }
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!balance) {
+      setAdminAccount(e.target.value)
+    }
+    else {
+      setAmountToMint(e.target.value)
+    }
+  }
+
+  useEffect(() => {
+    if (address) {
+      void contract.balance({id: address}).then((currBalance) => {
+        setBalance(currBalance.result)
+      })
+    }
+  })
+
+  return <ContractInteraction onInputChange={onInputChange} onSubmit={() => void callContractToken()} inputLabel={inputLabel} inputValue={!balance ? adminAccount : amountToMint} titleLabel={titleLabel} />
+}
