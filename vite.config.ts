@@ -23,6 +23,7 @@ function getFriendbotHost(mode: string) {
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   return {
+    base: '/scaffold-stellar-frontend/',
     plugins: [react()],
     define: {
       global: 'window',
